@@ -1,0 +1,22 @@
+# ===== Segredos (NUNCA versionar) =====
+.env
+**/appsettings.Development.json
+
+# ===== Backend .NET =====
+bin/
+obj/
+*.user
+
+# ===== Frontend / Node / Expo =====
+node_modules/
+.expo/
+dist/
+web-build/
+*.log
+.expo-shared/
+
+# ===== Diversos =====
+_expo_scaffold.log
+.DS_Store
+Thumbs.db
+README.md
