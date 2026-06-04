@@ -91,6 +91,20 @@ public class PedidosController : ControllerBase
         return Ok(pedidos.Select(p => MontarResposta(p, p.Usuario!.Nome)).ToList());
     }
 
+    [HttpGet("historico")]
+    [Authorize(Roles = $"{Perfis.Cozinha},{Perfis.Admin}")]
+    public async Task<ActionResult<IEnumerable<PedidoRespostaDto>>> Historico()
+    {
+        var pedidos = await _db.Pedidos
+            .Include(p => p.Itens)
+            .Include(p => p.Usuario)
+            .Where(p => p.Status == StatusPedido.Entregue || p.Status == StatusPedido.Cancelado)
+            .OrderByDescending(p => p.DataHora)
+            .ToListAsync();
+
+        return Ok(pedidos.Select(p => MontarResposta(p, p.Usuario!.Nome)).ToList());
+    }
+
     [HttpPut("{id}/status")]
     [Authorize(Roles = $"{Perfis.Cozinha},{Perfis.Admin}")]
     public async Task<IActionResult> AtualizarStatus(int id, AtualizarStatusDto dto)

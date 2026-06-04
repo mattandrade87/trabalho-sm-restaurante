@@ -3,7 +3,7 @@ import { API_URL } from "./config";
 async function requisitar(caminho, opcoes = {}) {
   const { metodo = "GET", corpo, token } = opcoes;
 
-  const headers = { "Content-Type": "application/json" };
+  const headers = { "Content-Type": "application/json", "ngrok-skip-browser-warning": "true" };
   if (token) headers["Authorization"] = "Bearer " + token;
 
   const resposta = await fetch(API_URL + caminho, {
@@ -53,6 +53,7 @@ export const api = {
     requisitar("/api/pedidos", { metodo: "POST", corpo: { itens, observacao }, token }),
   meusPedidos: (token) => requisitar("/api/pedidos/meus", { token }),
   filaCozinha: (token) => requisitar("/api/pedidos/cozinha", { token }),
+  historicoCozinha: (token) => requisitar("/api/pedidos/historico", { token }),
   atualizarStatus: (token, id, status) =>
     requisitar("/api/pedidos/" + id + "/status", { metodo: "PUT", corpo: { status }, token }),
   vendas: (token) => requisitar("/api/pedidos/vendas", { token }),
