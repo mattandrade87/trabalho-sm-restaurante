@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import {
-  View, Text, FlatList, Pressable, StyleSheet, Alert, ActivityIndicator, TextInput,
+  View, Text, FlatList, Pressable, StyleSheet, Alert, ActivityIndicator, TextInput, ScrollView,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { api } from "../../api";
@@ -13,6 +13,8 @@ export default function CardapioScreen({ navigation }) {
   const [produtos, setProdutos] = useState([]);
   const [carrinho, setCarrinho] = useState({});
   const [observacao, setObservacao] = useState("");
+  const [busca, setBusca] = useState("");
+  const [categoria, setCategoria] = useState("Todos");
   const [carregando, setCarregando] = useState(true);
   const [enviando, setEnviando] = useState(false);
 
@@ -42,6 +44,14 @@ export default function CardapioScreen({ navigation }) {
 
   const total = produtos.reduce((s, p) => s + (carrinho[p.id] || 0) * p.preco, 0);
   const qtdTotal = Object.values(carrinho).reduce((a, b) => a + b, 0);
+
+  const categorias = ["Todos", ...Array.from(new Set(produtos.map((p) => p.categoria)))];
+  const buscaLower = busca.trim().toLowerCase();
+  const produtosFiltrados = produtos.filter(
+    (p) =>
+      (categoria === "Todos" || p.categoria === categoria) &&
+      (buscaLower === "" || p.nome.toLowerCase().includes(buscaLower))
+  );
 
   async function finalizar() {
     const itens = Object.keys(carrinho).map((id) => ({
@@ -102,14 +112,34 @@ export default function CardapioScreen({ navigation }) {
 
   return (
     <View style={{ flex: 1, backgroundColor: cores.fundo }}>
+      <View style={styles.barraBusca}>
+        <TextInput
+          style={styles.inputBusca}
+          placeholder="Buscar no cardápio..."
+          value={busca}
+          onChangeText={setBusca}
+        />
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
+          {categorias.map((cat) => (
+            <Pressable
+              key={cat}
+              onPress={() => setCategoria(cat)}
+              style={[styles.chip, categoria === cat && styles.chipAtivo]}
+            >
+              <Text style={[styles.chipTexto, categoria === cat && styles.chipTextoAtivo]}>{cat}</Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+      </View>
+
       <FlatList
-        data={produtos}
+        data={produtosFiltrados}
         keyExtractor={(p) => String(p.id)}
         renderItem={renderProduto}
         contentContainerStyle={{ padding: 14, paddingBottom: 20 }}
         refreshing={carregando}
         onRefresh={carregar}
-        ListEmptyComponent={<Text style={styles.vazio}>Nenhum produto disponível.</Text>}
+        ListEmptyComponent={<Text style={styles.vazio}>Nenhum produto encontrado.</Text>}
         ListHeaderComponent={
           <TextInput
             style={styles.obs}
@@ -144,6 +174,19 @@ export default function CardapioScreen({ navigation }) {
 const styles = StyleSheet.create({
   centro: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: cores.fundo },
   vazio: { textAlign: "center", color: cores.textoClaro, marginTop: 40 },
+  barraBusca: { backgroundColor: "#fff", paddingTop: 10, borderBottomWidth: 1, borderBottomColor: cores.borda },
+  inputBusca: {
+    backgroundColor: cores.fundo, borderWidth: 1, borderColor: cores.borda, borderRadius: 10,
+    marginHorizontal: 14, paddingHorizontal: 12, paddingVertical: 10, color: cores.texto,
+  },
+  chips: { paddingHorizontal: 14, paddingVertical: 10 },
+  chip: {
+    paddingHorizontal: 14, paddingVertical: 7, borderRadius: 16, backgroundColor: cores.fundo,
+    borderWidth: 1, borderColor: cores.borda, marginRight: 8,
+  },
+  chipAtivo: { backgroundColor: cores.primaria, borderColor: cores.primaria },
+  chipTexto: { color: cores.texto, fontWeight: "600", fontSize: 13 },
+  chipTextoAtivo: { color: "#fff" },
   obs: {
     backgroundColor: "#fff", borderWidth: 1, borderColor: cores.borda, borderRadius: 10,
     paddingHorizontal: 12, paddingVertical: 10, marginBottom: 10, color: cores.texto,
