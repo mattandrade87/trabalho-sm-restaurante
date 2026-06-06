@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { View, Text, FlatList, Pressable, StyleSheet, Alert, ActivityIndicator } from "react-native";
+import { View, Text, FlatList, Pressable, StyleSheet, Alert, ActivityIndicator, Switch } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { api } from "../../api";
 import { useAuth } from "../../AuthContext";
@@ -31,6 +31,24 @@ export default function AdminProdutosScreen({ navigation }) {
     setPuxando(false);
   }
 
+  async function alternarDisponibilidade(produto) {
+    setProdutos((prev) =>
+      prev.map((p) => (p.id === produto.id ? { ...p, disponivel: !p.disponivel } : p))
+    );
+    try {
+      await api.editarProduto(usuario.token, produto.id, {
+        nome: produto.nome,
+        descricao: produto.descricao,
+        preco: produto.preco,
+        categoria: produto.categoria,
+        disponivel: !produto.disponivel,
+      });
+    } catch (e) {
+      Alert.alert("Erro", e.message);
+      carregar();
+    }
+  }
+
   function confirmarExcluir(produto) {
     Alert.alert("Excluir produto", 'Excluir "' + produto.nome + '"?', [
       { text: "Cancelar", style: "cancel" },
@@ -57,11 +75,20 @@ export default function AdminProdutosScreen({ navigation }) {
           <Text style={styles.cat}>
             {item.categoria} • {formatarReal(item.preco)}
           </Text>
-          {!item.disponivel && <Text style={styles.indisponivel}>Indisponível</Text>}
+          <Text style={[styles.situacao, { color: item.disponivel ? cores.verde : cores.vermelho }]}>
+            {item.disponivel ? "Disponível" : "Indisponível"}
+          </Text>
         </View>
-        <Pressable hitSlop={8} onPress={() => confirmarExcluir(item)} style={styles.btnExcluir}>
-          <Text style={{ color: cores.vermelho, fontWeight: "700" }}>Excluir</Text>
-        </Pressable>
+        <View style={styles.acoes}>
+          <Switch
+            value={item.disponivel}
+            onValueChange={() => alternarDisponibilidade(item)}
+            trackColor={{ true: cores.verde }}
+          />
+          <Pressable hitSlop={8} onPress={() => confirmarExcluir(item)} style={styles.btnExcluir}>
+            <Text style={{ color: cores.vermelho, fontWeight: "700" }}>Excluir</Text>
+          </Pressable>
+        </View>
       </Pressable>
     );
   }
@@ -103,6 +130,7 @@ const styles = StyleSheet.create({
   },
   nome: { fontSize: 16, fontWeight: "700", color: cores.texto },
   cat: { fontSize: 13, color: cores.textoClaro, marginTop: 3 },
-  indisponivel: { fontSize: 12, color: cores.vermelho, fontWeight: "700", marginTop: 4 },
-  btnExcluir: { paddingHorizontal: 10, paddingVertical: 6 },
+  situacao: { fontSize: 12, fontWeight: "700", marginTop: 4 },
+  acoes: { alignItems: "center", gap: 6 },
+  btnExcluir: { paddingHorizontal: 10, paddingVertical: 4 },
 });
