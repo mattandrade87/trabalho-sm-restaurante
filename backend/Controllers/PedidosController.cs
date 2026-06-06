@@ -126,6 +126,21 @@ public class PedidosController : ControllerBase
         return NoContent();
     }
 
+    [HttpPut("{id}/cancelar")]
+    [Authorize(Roles = Perfis.Cliente)]
+    public async Task<IActionResult> Cancelar(int id)
+    {
+        var pedido = await _db.Pedidos.FirstOrDefaultAsync(p => p.Id == id && p.UsuarioId == UsuarioLogadoId);
+        if (pedido == null)
+            return NotFound("Pedido nao encontrado.");
+        if (pedido.Status != StatusPedido.Recebido)
+            return BadRequest("So da para cancelar enquanto o pedido ainda nao foi preparado.");
+
+        pedido.Status = StatusPedido.Cancelado;
+        await _db.SaveChangesAsync();
+        return NoContent();
+    }
+
     [HttpGet("vendas")]
     [Authorize(Roles = Perfis.Admin)]
     public async Task<ActionResult<object>> Vendas()
@@ -138,10 +153,25 @@ public class PedidosController : ControllerBase
 
         var validos = pedidos.Where(p => p.Status != StatusPedido.Cancelado).ToList();
 
+        var porStatus = pedidos
+            .GroupBy(p => p.Status)
+            .Select(g => new { Status = g.Key, Quantidade = g.Count() })
+            .ToList();
+
+        var maisVendidos = validos
+            .SelectMany(p => p.Itens)
+            .GroupBy(i => i.NomeProduto)
+            .Select(g => new { Nome = g.Key, Quantidade = g.Sum(i => i.Quantidade) })
+            .OrderByDescending(x => x.Quantidade)
+            .Take(5)
+            .ToList();
+
         return Ok(new
         {
             QuantidadePedidos = validos.Count,
             TotalVendido = validos.Sum(p => p.Total),
+            PorStatus = porStatus,
+            MaisVendidos = maisVendidos,
             Pedidos = pedidos.Select(p => MontarResposta(p, p.Usuario!.Nome)).ToList()
         });
     }

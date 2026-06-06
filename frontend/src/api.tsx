@@ -52,6 +52,8 @@ export const api = {
   criarPedido: (token, itens, observacao) =>
     requisitar("/api/pedidos", { metodo: "POST", corpo: { itens, observacao }, token }),
   meusPedidos: (token) => requisitar("/api/pedidos/meus", { token }),
+  cancelarPedido: (token, id) =>
+    requisitar("/api/pedidos/" + id + "/cancelar", { metodo: "PUT", token }),
   filaCozinha: (token) => requisitar("/api/pedidos/cozinha", { token }),
   historicoCozinha: (token) => requisitar("/api/pedidos/historico", { token }),
   atualizarStatus: (token, id, status) =>
