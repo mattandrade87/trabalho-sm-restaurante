@@ -4,7 +4,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { api } from "../../api";
 import { useAuth } from "../../AuthContext";
 import { cores } from "../../theme";
-import { formatarDataHora } from "../../utils";
+import { formatarDataHora, formatarEntrega } from "../../utils";
 import SeloStatus from "../../components/SeloStatus";
 
 function proximaAcao(status) {
@@ -76,6 +76,7 @@ export default function FilaCozinhaScreen() {
         <Text style={styles.cliente}>
           {item.clienteNome} • {formatarDataHora(item.dataHora)}
         </Text>
+        <Text style={styles.entrega}>{formatarEntrega(item)}</Text>
 
         {item.itens.map((it, idx) => (
           <Text key={idx} style={styles.item}>
@@ -137,7 +138,8 @@ const styles = StyleSheet.create({
   },
   linhaTopo: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   pedidoId: { fontSize: 16, fontWeight: "800", color: cores.texto },
-  cliente: { color: cores.textoClaro, fontSize: 12, marginTop: 2, marginBottom: 8 },
+  cliente: { color: cores.textoClaro, fontSize: 12, marginTop: 2 },
+  entrega: { color: cores.primariaEscura, fontSize: 13, fontWeight: "700", marginTop: 2, marginBottom: 8 },
   item: { color: cores.texto, fontSize: 15, lineHeight: 22 },
   obs: { color: cores.textoClaro, fontStyle: "italic", marginTop: 4 },
   botoes: { flexDirection: "row", marginTop: 12, gap: 8 },

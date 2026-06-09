@@ -14,6 +14,12 @@ public static class DbInitializer
             db.GetService<IRelationalDatabaseCreator>().CreateTables();
         }
 
+        db.Database.ExecuteSqlRaw(
+            "ALTER TABLE \"Pedidos\" ADD COLUMN IF NOT EXISTS \"TipoEntrega\" text NOT NULL DEFAULT 'Balcao';" +
+            "ALTER TABLE \"Pedidos\" ADD COLUMN IF NOT EXISTS \"Mesa\" text;" +
+            "ALTER TABLE \"Pedidos\" ADD COLUMN IF NOT EXISTS \"Nota\" integer;" +
+            "ALTER TABLE \"Pedidos\" ADD COLUMN IF NOT EXISTS \"Comentario\" text;");
+
         if (!db.Usuarios.Any())
         {
             db.Usuarios.AddRange(

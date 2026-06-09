@@ -4,7 +4,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { api } from "../../api";
 import { useAuth } from "../../AuthContext";
 import { cores } from "../../theme";
-import { formatarReal, formatarDataHora } from "../../utils";
+import { formatarReal, formatarDataHora, formatarEntrega } from "../../utils";
 import SeloStatus from "../../components/SeloStatus";
 
 export default function HistoricoCozinhaScreen() {
@@ -41,6 +41,7 @@ export default function HistoricoCozinhaScreen() {
         <Text style={styles.cliente}>
           {item.clienteNome} • {formatarDataHora(item.dataHora)}
         </Text>
+        <Text style={styles.entrega}>{formatarEntrega(item)}</Text>
         {item.itens.map((it, idx) => (
           <Text key={idx} style={styles.item}>
             {it.quantidade}x {it.nomeProduto}
@@ -82,7 +83,8 @@ const styles = StyleSheet.create({
   },
   linhaTopo: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   pedidoId: { fontSize: 16, fontWeight: "800", color: cores.texto },
-  cliente: { color: cores.textoClaro, fontSize: 12, marginTop: 2, marginBottom: 8 },
+  cliente: { color: cores.textoClaro, fontSize: 12, marginTop: 2 },
+  entrega: { color: cores.primariaEscura, fontSize: 13, fontWeight: "700", marginTop: 2, marginBottom: 8 },
   item: { color: cores.texto, fontSize: 15, lineHeight: 22 },
   total: { marginTop: 8, fontSize: 16, fontWeight: "800", color: cores.primariaEscura },
 });

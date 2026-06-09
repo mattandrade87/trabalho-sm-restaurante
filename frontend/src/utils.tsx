@@ -11,3 +11,9 @@ export function formatarDataHora(iso) {
     " " + dois(d.getHours()) + ":" + dois(d.getMinutes())
   );
 }
+
+export function formatarEntrega(pedido) {
+  if (pedido.tipoEntrega === "Mesa") return "Mesa " + (pedido.mesa || "");
+  if (pedido.tipoEntrega === "Viagem") return "Viagem";
+  return "Balcão";
+}

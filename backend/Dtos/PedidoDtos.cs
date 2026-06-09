@@ -1,8 +1,9 @@
 namespace LanchoneteApi.Dtos;
 
 public record ItemPedidoEntradaDto(int ProdutoId, int Quantidade);
-public record CriarPedidoDto(List<ItemPedidoEntradaDto> Itens, string? Observacao);
+public record CriarPedidoDto(List<ItemPedidoEntradaDto> Itens, string? Observacao, string? TipoEntrega, string? Mesa);
 public record AtualizarStatusDto(string Status);
+public record AvaliacaoDto(int Nota, string? Comentario);
 
 public record ItemPedidoRespostaDto(
     int ProdutoId,
@@ -19,5 +20,9 @@ public record PedidoRespostaDto(
     string Status,
     decimal Total,
     string? Observacao,
+    string TipoEntrega,
+    string? Mesa,
+    int? Nota,
+    string? Comentario,
     List<ItemPedidoRespostaDto> Itens
 );

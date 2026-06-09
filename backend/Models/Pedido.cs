@@ -9,5 +9,9 @@ public class Pedido
     public string Status { get; set; } = StatusPedido.Recebido;
     public decimal Total { get; set; }
     public string? Observacao { get; set; }
+    public string TipoEntrega { get; set; } = "Balcao";
+    public string? Mesa { get; set; }
+    public int? Nota { get; set; }
+    public string? Comentario { get; set; }
     public List<ItemPedido> Itens { get; set; } = new();
 }

@@ -28,12 +28,18 @@ public class PedidosController : ControllerBase
         if (dto.Itens == null || dto.Itens.Count == 0)
             return BadRequest("O pedido precisa ter pelo menos um item.");
 
+        var tipo = dto.TipoEntrega ?? "Balcao";
+        if (tipo != "Balcao" && tipo != "Mesa" && tipo != "Viagem")
+            tipo = "Balcao";
+
         var pedido = new Pedido
         {
             UsuarioId = UsuarioLogadoId,
             DataHora = DateTime.UtcNow,
             Status = StatusPedido.Recebido,
-            Observacao = dto.Observacao
+            Observacao = dto.Observacao,
+            TipoEntrega = tipo,
+            Mesa = tipo == "Mesa" ? dto.Mesa : null
         };
 
         foreach (var itemDto in dto.Itens)
@@ -141,6 +147,25 @@ public class PedidosController : ControllerBase
         return NoContent();
     }
 
+    [HttpPut("{id}/avaliacao")]
+    [Authorize(Roles = Perfis.Cliente)]
+    public async Task<IActionResult> Avaliar(int id, AvaliacaoDto dto)
+    {
+        if (dto.Nota < 1 || dto.Nota > 5)
+            return BadRequest("A nota deve ser de 1 a 5.");
+
+        var pedido = await _db.Pedidos.FirstOrDefaultAsync(p => p.Id == id && p.UsuarioId == UsuarioLogadoId);
+        if (pedido == null)
+            return NotFound("Pedido nao encontrado.");
+        if (pedido.Status != StatusPedido.Entregue)
+            return BadRequest("So da para avaliar pedidos entregues.");
+
+        pedido.Nota = dto.Nota;
+        pedido.Comentario = dto.Comentario;
+        await _db.SaveChangesAsync();
+        return NoContent();
+    }
+
     [HttpGet("vendas")]
     [Authorize(Roles = Perfis.Admin)]
     public async Task<ActionResult<object>> Vendas()
@@ -183,7 +208,8 @@ public class PedidosController : ControllerBase
         )).ToList();
 
         return new PedidoRespostaDto(
-            p.Id, clienteNome, p.DataHora, p.Status, p.Total, p.Observacao, itens
+            p.Id, clienteNome, p.DataHora, p.Status, p.Total, p.Observacao,
+            p.TipoEntrega, p.Mesa, p.Nota, p.Comentario, itens
         );
     }
 }

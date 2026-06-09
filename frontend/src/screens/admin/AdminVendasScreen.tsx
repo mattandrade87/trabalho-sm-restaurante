@@ -46,6 +46,11 @@ export default function AdminVendasScreen() {
         </View>
         <Text style={styles.data}>{formatarDataHora(item.dataHora)}</Text>
         <Text style={styles.total}>{formatarReal(item.total)}</Text>
+        {item.nota ? (
+          <Text style={styles.aval}>
+            {"★".repeat(item.nota)}{item.comentario ? " — " + item.comentario : ""}
+          </Text>
+        ) : null}
       </View>
     );
   }
@@ -148,4 +153,5 @@ const styles = StyleSheet.create({
   pedidoId: { fontSize: 15, fontWeight: "800", color: cores.texto, flex: 1, paddingRight: 8 },
   data: { color: cores.textoClaro, fontSize: 12, marginTop: 2 },
   total: { marginTop: 6, fontSize: 16, fontWeight: "800", color: cores.primariaEscura },
+  aval: { marginTop: 4, color: cores.amarelo, fontWeight: "700", fontSize: 13 },
 });

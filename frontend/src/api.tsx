@@ -49,8 +49,10 @@ export const api = {
   excluirProduto: (token, id) =>
     requisitar("/api/produtos/" + id, { metodo: "DELETE", token }),
 
-  criarPedido: (token, itens, observacao) =>
-    requisitar("/api/pedidos", { metodo: "POST", corpo: { itens, observacao }, token }),
+  criarPedido: (token, itens, observacao, tipoEntrega, mesa) =>
+    requisitar("/api/pedidos", { metodo: "POST", corpo: { itens, observacao, tipoEntrega, mesa }, token }),
+  avaliarPedido: (token, id, nota, comentario) =>
+    requisitar("/api/pedidos/" + id + "/avaliacao", { metodo: "PUT", corpo: { nota, comentario }, token }),
   meusPedidos: (token) => requisitar("/api/pedidos/meus", { token }),
   cancelarPedido: (token, id) =>
     requisitar("/api/pedidos/" + id + "/cancelar", { metodo: "PUT", token }),

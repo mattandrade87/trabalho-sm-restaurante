@@ -13,6 +13,8 @@ export default function CardapioScreen({ navigation }) {
   const [produtos, setProdutos] = useState([]);
   const [carrinho, setCarrinho] = useState({});
   const [observacao, setObservacao] = useState("");
+  const [tipoEntrega, setTipoEntrega] = useState("Balcao");
+  const [mesa, setMesa] = useState("");
   const [busca, setBusca] = useState("");
   const [categoria, setCategoria] = useState("Todos");
   const [carregando, setCarregando] = useState(true);
@@ -64,9 +66,14 @@ export default function CardapioScreen({ navigation }) {
     }
     try {
       setEnviando(true);
-      await api.criarPedido(usuario.token, itens, observacao.trim() || null);
+      await api.criarPedido(
+        usuario.token, itens, observacao.trim() || null,
+        tipoEntrega, tipoEntrega === "Mesa" ? (mesa.trim() || null) : null
+      );
       setCarrinho({});
       setObservacao("");
+      setTipoEntrega("Balcao");
+      setMesa("");
       Alert.alert("Pedido enviado! 🎉", 'Acompanhe em "Meus Pedidos".');
       navigation.navigate("MeusPedidos");
     } catch (e) {
@@ -141,12 +148,37 @@ export default function CardapioScreen({ navigation }) {
         onRefresh={carregar}
         ListEmptyComponent={<Text style={styles.vazio}>Nenhum produto encontrado.</Text>}
         ListHeaderComponent={
-          <TextInput
-            style={styles.obs}
-            placeholder="Observação (opcional). Ex: sem cebola"
-            value={observacao}
-            onChangeText={setObservacao}
-          />
+          <View>
+            <Text style={styles.rotuloEntrega}>Tipo de entrega</Text>
+            <View style={styles.entregaChips}>
+              {["Balcao", "Mesa", "Viagem"].map((t) => (
+                <Pressable
+                  key={t}
+                  onPress={() => setTipoEntrega(t)}
+                  style={[styles.entregaChip, tipoEntrega === t && styles.entregaChipAtivo]}
+                >
+                  <Text style={[styles.entregaChipTexto, tipoEntrega === t && styles.entregaChipTextoAtivo]}>
+                    {t === "Balcao" ? "Balcão" : t}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+            {tipoEntrega === "Mesa" && (
+              <TextInput
+                style={styles.obs}
+                placeholder="Número da mesa"
+                keyboardType="number-pad"
+                value={mesa}
+                onChangeText={setMesa}
+              />
+            )}
+            <TextInput
+              style={styles.obs}
+              placeholder="Observação (opcional). Ex: sem cebola"
+              value={observacao}
+              onChangeText={setObservacao}
+            />
+          </View>
         }
       />
 
@@ -187,6 +219,15 @@ const styles = StyleSheet.create({
   chipAtivo: { backgroundColor: cores.primaria, borderColor: cores.primaria },
   chipTexto: { color: cores.texto, fontWeight: "600", fontSize: 13 },
   chipTextoAtivo: { color: "#fff" },
+  rotuloEntrega: { fontSize: 13, fontWeight: "700", color: cores.texto, marginBottom: 8 },
+  entregaChips: { flexDirection: "row", gap: 8, marginBottom: 10 },
+  entregaChip: {
+    flex: 1, alignItems: "center", paddingVertical: 9, borderRadius: 10,
+    backgroundColor: "#fff", borderWidth: 1, borderColor: cores.borda,
+  },
+  entregaChipAtivo: { backgroundColor: cores.primaria, borderColor: cores.primaria },
+  entregaChipTexto: { color: cores.texto, fontWeight: "600", fontSize: 13 },
+  entregaChipTextoAtivo: { color: "#fff" },
   obs: {
     backgroundColor: "#fff", borderWidth: 1, borderColor: cores.borda, borderRadius: 10,
     paddingHorizontal: 12, paddingVertical: 10, marginBottom: 10, color: cores.texto,
