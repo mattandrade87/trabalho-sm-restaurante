@@ -66,6 +66,17 @@ export default function MeusPedidosScreen() {
     }
   }
 
+  async function pedirNovamente(pedido) {
+    const itens = pedido.itens.map((it) => ({ produtoId: it.produtoId, quantidade: it.quantidade }));
+    try {
+      await api.criarPedido(usuario.token, itens, pedido.observacao || null, pedido.tipoEntrega, pedido.mesa);
+      Alert.alert("Pedido refeito! 🎉", "Seu novo pedido foi enviado.");
+      carregar();
+    } catch (e) {
+      Alert.alert("Não foi possível repetir", e.message);
+    }
+  }
+
   function renderPedido({ item }) {
     return (
       <View style={styles.card}>
@@ -83,6 +94,12 @@ export default function MeusPedidosScreen() {
 
         {!!item.observacao && <Text style={styles.obs}>Obs: {item.observacao}</Text>}
         <Text style={styles.total}>Total: {formatarReal(item.total)}</Text>
+
+        {(item.status === "Entregue" || item.status === "Cancelado") && (
+          <Pressable style={styles.btnRepetir} onPress={() => pedirNovamente(item)}>
+            <Text style={styles.btnRepetirTexto}>Pedir novamente</Text>
+          </Pressable>
+        )}
 
         {item.status === "Recebido" && (
           <Pressable style={styles.btnCancelar} onPress={() => confirmarCancelar(item)}>
@@ -166,6 +183,11 @@ const styles = StyleSheet.create({
   item: { color: cores.texto, fontSize: 14, lineHeight: 20 },
   obs: { color: cores.textoClaro, fontStyle: "italic", marginTop: 4 },
   total: { marginTop: 8, fontSize: 16, fontWeight: "800", color: cores.primariaEscura },
+  btnRepetir: {
+    marginTop: 12, backgroundColor: cores.primaria, borderRadius: 10,
+    paddingVertical: 11, alignItems: "center",
+  },
+  btnRepetirTexto: { color: "#fff", fontWeight: "700" },
   btnCancelar: {
     marginTop: 12, borderWidth: 1, borderColor: cores.vermelho, borderRadius: 10,
     paddingVertical: 10, alignItems: "center",

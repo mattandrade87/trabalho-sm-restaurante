@@ -168,11 +168,19 @@ public class PedidosController : ControllerBase
 
     [HttpGet("vendas")]
     [Authorize(Roles = Perfis.Admin)]
-    public async Task<ActionResult<object>> Vendas()
+    public async Task<ActionResult<object>> Vendas([FromQuery] string periodo = "tudo")
     {
-        var pedidos = await _db.Pedidos
+        var consulta = _db.Pedidos
             .Include(p => p.Itens)
             .Include(p => p.Usuario)
+            .AsQueryable();
+
+        if (periodo == "hoje")
+            consulta = consulta.Where(p => p.DataHora >= DateTime.UtcNow.Date);
+        else if (periodo == "semana")
+            consulta = consulta.Where(p => p.DataHora >= DateTime.UtcNow.Date.AddDays(-7));
+
+        var pedidos = await consulta
             .OrderByDescending(p => p.DataHora)
             .ToListAsync();
 

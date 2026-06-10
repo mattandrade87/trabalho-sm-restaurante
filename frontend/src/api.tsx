@@ -60,5 +60,5 @@ export const api = {
   historicoCozinha: (token) => requisitar("/api/pedidos/historico", { token }),
   atualizarStatus: (token, id, status) =>
     requisitar("/api/pedidos/" + id + "/status", { metodo: "PUT", corpo: { status }, token }),
-  vendas: (token) => requisitar("/api/pedidos/vendas", { token }),
+  vendas: (token, periodo) => requisitar("/api/pedidos/vendas?periodo=" + (periodo || "tudo"), { token }),
 };

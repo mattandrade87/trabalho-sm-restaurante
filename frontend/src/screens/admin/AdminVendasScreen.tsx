@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, Pressable } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { api } from "../../api";
 import { useAuth } from "../../AuthContext";
@@ -18,16 +18,17 @@ export default function AdminVendasScreen() {
   });
   const [carregando, setCarregando] = useState(true);
   const [puxando, setPuxando] = useState(false);
+  const [periodo, setPeriodo] = useState("tudo");
 
-  const carregar = useCallback(async () => {
+  const carregar = useCallback(async (per) => {
     try {
-      const r = await api.vendas(usuario.token);
+      const r = await api.vendas(usuario.token, per || periodo);
       setDados(r);
     } catch (e) {
     } finally {
       setCarregando(false);
     }
-  }, [usuario.token]);
+  }, [usuario.token, periodo]);
 
   useFocusEffect(useCallback(() => { carregar(); }, [carregar]));
 
@@ -74,6 +75,17 @@ export default function AdminVendasScreen() {
       onRefresh={puxar}
       ListHeaderComponent={
         <View>
+          <View style={styles.periodoChips}>
+            {[["hoje", "Hoje"], ["semana", "7 dias"], ["tudo", "Tudo"]].map(([val, lbl]) => (
+              <Pressable
+                key={val}
+                onPress={() => { setPeriodo(val); carregar(val); }}
+                style={[styles.periodoChip, periodo === val && styles.periodoChipAtivo]}
+              >
+                <Text style={[styles.periodoChipTexto, periodo === val && styles.periodoChipTextoAtivo]}>{lbl}</Text>
+              </Pressable>
+            ))}
+          </View>
           <View style={styles.resumo}>
             <View style={[styles.resumoCard, { backgroundColor: cores.verde }]}>
               <Text style={styles.resumoLabel}>Total vendido</Text>
@@ -125,6 +137,14 @@ const styles = StyleSheet.create({
   centro: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: cores.fundo },
   vazio: { textAlign: "center", color: cores.textoClaro, marginTop: 30 },
   vazioPeq: { color: cores.textoClaro, fontSize: 13 },
+  periodoChips: { flexDirection: "row", gap: 8, marginBottom: 12 },
+  periodoChip: {
+    flex: 1, alignItems: "center", paddingVertical: 9, borderRadius: 10,
+    backgroundColor: cores.cartao, borderWidth: 1, borderColor: cores.borda,
+  },
+  periodoChipAtivo: { backgroundColor: cores.primaria, borderColor: cores.primaria },
+  periodoChipTexto: { color: cores.texto, fontWeight: "600", fontSize: 13 },
+  periodoChipTextoAtivo: { color: "#fff" },
   resumo: { flexDirection: "row", gap: 10, marginBottom: 12 },
   resumoCard: { flex: 1, borderRadius: 12, padding: 16 },
   resumoLabel: { color: "#fff", fontSize: 13, opacity: 0.9 },
