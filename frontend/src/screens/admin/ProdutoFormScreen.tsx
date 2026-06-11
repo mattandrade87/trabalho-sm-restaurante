@@ -6,6 +6,8 @@ import { api } from "../../api";
 import { useAuth } from "../../AuthContext";
 import { cores } from "../../theme";
 
+const CATEGORIAS = ["Lanche", "Porcao", "Bebida", "Sobremesa", "Outros"];
+
 export default function ProdutoFormScreen({ route, navigation }) {
   const { usuario } = useAuth();
   const produtoEditar = route.params ? route.params.produto : null;
@@ -16,7 +18,7 @@ export default function ProdutoFormScreen({ route, navigation }) {
   const [preco, setPreco] = useState(
     produtoEditar ? String(produtoEditar.preco).replace(".", ",") : ""
   );
-  const [categoria, setCategoria] = useState(produtoEditar ? produtoEditar.categoria : "");
+  const [categoria, setCategoria] = useState(produtoEditar ? produtoEditar.categoria : "Lanche");
   const [disponivel, setDisponivel] = useState(produtoEditar ? produtoEditar.disponivel : true);
   const [salvando, setSalvando] = useState(false);
 
@@ -39,7 +41,7 @@ export default function ProdutoFormScreen({ route, navigation }) {
       nome: nome.trim(),
       descricao: descricao.trim(),
       preco: precoNum,
-      categoria: categoria.trim() || "Outros",
+      categoria: categoria,
       disponivel,
     };
 
@@ -82,12 +84,17 @@ export default function ProdutoFormScreen({ route, navigation }) {
       />
 
       <Text style={styles.label}>Categoria</Text>
-      <TextInput
-        style={styles.input}
-        value={categoria}
-        onChangeText={setCategoria}
-        placeholder="Lanche, Bebida, Porção..."
-      />
+      <View style={styles.categorias}>
+        {CATEGORIAS.map((cat) => (
+          <Pressable
+            key={cat}
+            onPress={() => setCategoria(cat)}
+            style={[styles.catChip, categoria === cat && styles.catChipAtivo]}
+          >
+            <Text style={[styles.catChipTexto, categoria === cat && styles.catChipTextoAtivo]}>{cat}</Text>
+          </Pressable>
+        ))}
+      </View>
 
       <View style={styles.linhaSwitch}>
         <Text style={styles.label}>Disponível no cardápio</Text>
@@ -115,6 +122,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff", borderWidth: 1, borderColor: cores.borda, borderRadius: 10,
     paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, color: cores.texto,
   },
+  categorias: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  catChip: {
+    paddingHorizontal: 14, paddingVertical: 9, borderRadius: 16, backgroundColor: "#fff",
+    borderWidth: 1, borderColor: cores.borda,
+  },
+  catChipAtivo: { backgroundColor: cores.primaria, borderColor: cores.primaria },
+  catChipTexto: { color: cores.texto, fontWeight: "600", fontSize: 14 },
+  catChipTextoAtivo: { color: "#fff" },
   linhaSwitch: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 8 },
   btn: { backgroundColor: cores.primaria, borderRadius: 10, paddingVertical: 15, alignItems: "center", marginTop: 28 },
   btnTexto: { color: "#fff", fontWeight: "700", fontSize: 16 },
