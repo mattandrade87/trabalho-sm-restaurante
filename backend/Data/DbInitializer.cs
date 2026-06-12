@@ -61,6 +61,74 @@ public static class DbInitializer
         }
 
         db.SaveChanges();
+
+        if (!db.Pedidos.Any(p => p.DataHora < DateTime.UtcNow.Date))
+        {
+            var cliente = db.Usuarios.First(u => u.Perfil == Perfis.Cliente);
+            var produtos = db.Produtos.ToList();
+
+            Produto buscar(string nome) => produtos.First(p => p.Nome == nome);
+
+            db.Pedidos.AddRange(
+                MontarPedidoMock(cliente.Id, new DateTime(2026, 6, 11, 12, 30, 0, DateTimeKind.Utc), "Balcao", null, 5, "Tudo otimo!", new List<ItemPedido>
+                {
+                    ItemDe(buscar("X-Burguer"), 2),
+                    ItemDe(buscar("Refrigerante Lata"), 2)
+                }),
+                MontarPedidoMock(cliente.Id, new DateTime(2026, 6, 13, 19, 15, 0, DateTimeKind.Utc), "Mesa", "4", 4, null, new List<ItemPedido>
+                {
+                    ItemDe(buscar("X-Bacon"), 1),
+                    ItemDe(buscar("Batata Frita"), 1),
+                    ItemDe(buscar("Suco Natural"), 1)
+                }),
+                MontarPedidoMock(cliente.Id, new DateTime(2026, 6, 15, 13, 0, 0, DateTimeKind.Utc), "Viagem", null, 5, null, new List<ItemPedido>
+                {
+                    ItemDe(buscar("Cachorro-Quente"), 3),
+                    ItemDe(buscar("Refrigerante Lata"), 3)
+                }),
+                MontarPedidoMock(cliente.Id, new DateTime(2026, 6, 16, 20, 45, 0, DateTimeKind.Utc), "Balcao", null, null, null, new List<ItemPedido>
+                {
+                    ItemDe(buscar("X-Burguer"), 1),
+                    ItemDe(buscar("Batata Frita"), 1),
+                    ItemDe(buscar("Pudim"), 1)
+                }),
+                MontarPedidoMock(cliente.Id, new DateTime(2026, 6, 17, 12, 10, 0, DateTimeKind.Utc), "Mesa", "2", 3, "Demorou um pouco", new List<ItemPedido>
+                {
+                    ItemDe(buscar("X-Bacon"), 2),
+                    ItemDe(buscar("Suco Natural"), 2)
+                })
+            );
+
+            db.SaveChanges();
+        }
+    }
+
+    private static ItemPedido ItemDe(Produto produto, int quantidade)
+    {
+        return new ItemPedido
+        {
+            ProdutoId = produto.Id,
+            NomeProduto = produto.Nome,
+            PrecoUnitario = produto.Preco,
+            Quantidade = quantidade,
+            Subtotal = produto.Preco * quantidade
+        };
+    }
+
+    private static Pedido MontarPedidoMock(int clienteId, DateTime data, string tipoEntrega, string? mesa, int? nota, string? comentario, List<ItemPedido> itens)
+    {
+        return new Pedido
+        {
+            UsuarioId = clienteId,
+            DataHora = data,
+            Status = StatusPedido.Entregue,
+            TipoEntrega = tipoEntrega,
+            Mesa = mesa,
+            Nota = nota,
+            Comentario = comentario,
+            Itens = itens,
+            Total = itens.Sum(i => i.Subtotal)
+        };
     }
 
     private static bool TabelasJaExistem(AppDbContext db)
