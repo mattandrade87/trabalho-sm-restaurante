@@ -14,7 +14,7 @@ function proximaAcao(status) {
   return null;
 }
 
-export default function FilaCozinhaScreen() {
+export default function FilaCozinhaScreen({ navigation }) {
   const { usuario } = useAuth();
   const [pedidos, setPedidos] = useState([]);
   const [carregando, setCarregando] = useState(true);
@@ -125,6 +125,11 @@ export default function FilaCozinhaScreen() {
       refreshing={puxando}
       onRefresh={puxarParaAtualizar}
       ListEmptyComponent={<Text style={styles.vazio}>Nenhum pedido na fila no momento. 🎉</Text>}
+      ListFooterComponent={
+        <Pressable style={styles.btnHistorico} onPress={() => navigation.navigate("HistoricoCozinha")}>
+          <Text style={styles.btnHistoricoTexto}>Ver histórico de pedidos</Text>
+        </Pressable>
+      }
     />
   );
 }
@@ -146,4 +151,9 @@ const styles = StyleSheet.create({
   btn: { flex: 1, paddingVertical: 12, borderRadius: 10, alignItems: "center", justifyContent: "center" },
   btnTexto: { color: "#fff", fontWeight: "700", fontSize: 14 },
   btnCancelar: { backgroundColor: "#fff", borderWidth: 1, borderColor: cores.vermelho },
+  btnHistorico: {
+    marginTop: 6, marginBottom: 10, backgroundColor: "#fff", borderWidth: 1, borderColor: cores.primaria,
+    borderRadius: 10, paddingVertical: 13, alignItems: "center",
+  },
+  btnHistoricoTexto: { color: cores.primaria, fontWeight: "700", fontSize: 15 },
 });

@@ -1,5 +1,4 @@
 import React from "react";
-import { Pressable, Text } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import FilaCozinhaScreen from "../screens/cozinha/FilaCozinhaScreen";
 import HistoricoCozinhaScreen from "../screens/cozinha/HistoricoCozinhaScreen";
@@ -21,14 +20,7 @@ export default function CozinhaNavigator() {
       <Stack.Screen
         name="FilaCozinha"
         component={FilaCozinhaScreen}
-        options={({ navigation }) => ({
-          title: "Cozinha — Pedidos",
-          headerLeft: () => (
-            <Pressable onPress={() => navigation.navigate("HistoricoCozinha")} style={{ marginLeft: 14 }}>
-              <Text style={{ color: "#fff", fontWeight: "600", fontSize: 15 }}>Histórico</Text>
-            </Pressable>
-          ),
-        })}
+        options={{ title: "Cozinha — Pedidos" }}
       />
       <Stack.Screen
         name="HistoricoCozinha"
