@@ -7,5 +7,7 @@ public class Usuario
     public string Email { get; set; } = string.Empty;
     public string SenhaHash { get; set; } = string.Empty;
     public string Perfil { get; set; } = Perfis.Cliente;
+    public string? Telefone { get; set; }
+    public string? Foto { get; set; }
     public List<Pedido> Pedidos { get; set; } = new();
 }
