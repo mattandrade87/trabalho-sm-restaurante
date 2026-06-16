@@ -28,8 +28,14 @@ export function AuthProvider({ children }) {
     await AsyncStorage.removeItem("usuario");
   }
 
+  async function atualizarUsuario(parciais) {
+    const novo = { ...usuario, ...parciais };
+    setUsuario(novo);
+    await AsyncStorage.setItem("usuario", JSON.stringify(novo));
+  }
+
   return (
-    <AuthContext.Provider value={{ usuario, carregando, entrar, sair }}>
+    <AuthContext.Provider value={{ usuario, carregando, entrar, sair, atualizarUsuario }}>
       {children}
     </AuthContext.Provider>
   );

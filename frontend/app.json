@@ -6,6 +6,14 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O app usa suas fotos para definir a foto de perfil."
+        }
+      ]
+    ],
     "ios": {
       "supportsTablet": true
     },

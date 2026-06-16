@@ -61,4 +61,12 @@ export const api = {
   atualizarStatus: (token, id, status) =>
     requisitar("/api/pedidos/" + id + "/status", { metodo: "PUT", corpo: { status }, token }),
   vendas: (token, periodo) => requisitar("/api/pedidos/vendas?periodo=" + (periodo || "tudo"), { token }),
+
+  meuPerfil: (token) => requisitar("/api/perfil", { token }),
+  atualizarPerfil: (token, dados) =>
+    requisitar("/api/perfil", { metodo: "PUT", corpo: dados, token }),
+  alterarSenha: (token, senhaAtual, novaSenha) =>
+    requisitar("/api/perfil/senha", { metodo: "PUT", corpo: { senhaAtual, novaSenha }, token }),
+  listarClientes: (token) => requisitar("/api/clientes", { token }),
+  clienteDetalhe: (token, id) => requisitar("/api/clientes/" + id, { token }),
 };
