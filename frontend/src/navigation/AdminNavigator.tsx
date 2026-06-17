@@ -5,6 +5,9 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import AdminProdutosScreen from "../screens/admin/AdminProdutosScreen";
 import AdminVendasScreen from "../screens/admin/AdminVendasScreen";
 import ProdutoFormScreen from "../screens/admin/ProdutoFormScreen";
+import ClientesScreen from "../screens/admin/ClientesScreen";
+import ClienteDetalheScreen from "../screens/admin/ClienteDetalheScreen";
+import PerfilScreen from "../screens/PerfilScreen";
 import BotaoSair from "../components/BotaoSair";
 import { cores } from "../theme";
 
@@ -38,6 +41,22 @@ function AdminTabs() {
           tabBarIcon: () => <Text style={{ fontSize: 18 }}>💰</Text>,
         }}
       />
+      <Tab.Screen
+        name="AdminClientes"
+        component={ClientesScreen}
+        options={{
+          title: "Clientes",
+          tabBarIcon: () => <Text style={{ fontSize: 18 }}>👥</Text>,
+        }}
+      />
+      <Tab.Screen
+        name="AdminPerfil"
+        component={PerfilScreen}
+        options={{
+          title: "Perfil",
+          tabBarIcon: () => <Text style={{ fontSize: 18 }}>👤</Text>,
+        }}
+      />
     </Tab.Navigator>
   );
 }
@@ -54,6 +73,16 @@ export default function AdminNavigator() {
           headerTintColor: "#fff",
           headerTitleAlign: "center",
           title: "Produto",
+        }}
+      />
+      <Stack.Screen
+        name="ClienteDetalhe"
+        component={ClienteDetalheScreen}
+        options={{
+          headerStyle: { backgroundColor: cores.primaria },
+          headerTintColor: "#fff",
+          headerTitleAlign: "center",
+          title: "Cliente",
         }}
       />
     </Stack.Navigator>
