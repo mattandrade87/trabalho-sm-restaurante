@@ -7,7 +7,7 @@ export default function Avatar({ foto, nome, tamanho = 64 }) {
   const formato = { width: tamanho, height: tamanho, borderRadius: tamanho / 2 };
 
   if (foto) {
-    return <Image source={{ uri: foto }} style={[formato, styles.img]} />;
+    return <Image source={{ uri: foto }} style={[formato, styles.img]} resizeMode="cover" />;
   }
 
   return (

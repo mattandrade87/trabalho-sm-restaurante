@@ -41,22 +41,28 @@ export default function PerfilScreen() {
   useFocusEffect(useCallback(() => { carregar(); }, [carregar]));
 
   async function escolherFoto() {
-    const permissao = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permissao.granted) {
-      Alert.alert("Permissão necessária", "Precisamos de acesso às suas fotos para mudar a foto de perfil.");
-      return;
-    }
-    const resultado = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.5,
-      base64: true,
-    });
-    if (!resultado.canceled) {
-      const asset = resultado.assets[0];
-      const mime = asset.mimeType || "image/jpeg";
-      setFoto("data:" + mime + ";base64," + asset.base64);
+    try {
+      const permissao = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permissao.granted) {
+        Alert.alert("Permissão necessária", "Precisamos de acesso às suas fotos para mudar a foto de perfil.");
+        return;
+      }
+      const resultado = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        quality: 0.5,
+        base64: true,
+      });
+      if (!resultado.canceled) {
+        const asset = resultado.assets[0];
+        if (!asset.base64) {
+          Alert.alert("Ops", "Não consegui carregar essa imagem. Tente outra.");
+          return;
+        }
+        const mime = asset.mimeType || "image/jpeg";
+        setFoto("data:" + mime + ";base64," + asset.base64);
+      }
+    } catch (e) {
+      Alert.alert("Não foi possível abrir a foto", "Tente escolher outra imagem da galeria.");
     }
   }
 
