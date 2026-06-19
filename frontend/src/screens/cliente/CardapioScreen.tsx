@@ -13,7 +13,7 @@ export default function CardapioScreen({ navigation }) {
   const [produtos, setProdutos] = useState([]);
   const [carrinho, setCarrinho] = useState({});
   const [observacao, setObservacao] = useState("");
-  const [tipoEntrega, setTipoEntrega] = useState("Balcao");
+  const [tipoEntrega, setTipoEntrega] = useState("Mesa");
   const [mesa, setMesa] = useState("");
   const [busca, setBusca] = useState("");
   const [categoria, setCategoria] = useState("Todos");
@@ -72,7 +72,7 @@ export default function CardapioScreen({ navigation }) {
       );
       setCarrinho({});
       setObservacao("");
-      setTipoEntrega("Balcao");
+      setTipoEntrega("Mesa");
       setMesa("");
       Alert.alert("Pedido enviado! 🎉", 'Acompanhe em "Meus Pedidos".');
       navigation.navigate("MeusPedidos");
@@ -151,14 +151,14 @@ export default function CardapioScreen({ navigation }) {
           <View>
             <Text style={styles.rotuloEntrega}>Tipo de entrega</Text>
             <View style={styles.entregaChips}>
-              {["Balcao", "Mesa", "Viagem"].map((t) => (
+              {["Mesa", "Viagem"].map((t) => (
                 <Pressable
                   key={t}
                   onPress={() => setTipoEntrega(t)}
                   style={[styles.entregaChip, tipoEntrega === t && styles.entregaChipAtivo]}
                 >
                   <Text style={[styles.entregaChipTexto, tipoEntrega === t && styles.entregaChipTextoAtivo]}>
-                    {t === "Balcao" ? "Balcão" : t}
+                    {t}
                   </Text>
                 </Pressable>
               ))}
