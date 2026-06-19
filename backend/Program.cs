@@ -4,6 +4,7 @@ using LanchoneteApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,7 +40,29 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    var esquemaJwt = new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Cole apenas o token JWT (sem a palavra 'Bearer').",
+        Reference = new OpenApiReference
+        {
+            Type = ReferenceType.SecurityScheme,
+            Id = JwtBearerDefaults.AuthenticationScheme
+        }
+    };
+
+    options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, esquemaJwt);
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { esquemaJwt, Array.Empty<string>() }
+    });
+});
 
 var app = builder.Build();
 
