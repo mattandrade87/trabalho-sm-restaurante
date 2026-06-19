@@ -26,7 +26,7 @@ public class ClientesController : ControllerBase
             .Where(u => u.Perfil == Perfis.Cliente)
             .OrderBy(u => u.Nome)
             .Select(u => new ClienteResumoDto(
-                u.Id, u.Nome, u.Email, u.Telefone, u.Pedidos.Count
+                u.Id, u.Nome, u.Email, u.Telefone, u.Foto, u.Pedidos.Count
             ))
             .ToListAsync();
 

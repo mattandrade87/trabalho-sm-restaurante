@@ -36,7 +36,7 @@ export default function ClientesScreen({ navigation }) {
         style={styles.card}
         onPress={() => navigation.navigate("ClienteDetalhe", { id: item.id, nome: item.nome })}
       >
-        <Avatar nome={item.nome} tamanho={48} />
+        <Avatar foto={item.foto} nome={item.nome} tamanho={48} />
         <View style={styles.info}>
           <Text style={styles.nome}>{item.nome}</Text>
           <Text style={styles.telefone}>{item.telefone || "Sem telefone"}</Text>
